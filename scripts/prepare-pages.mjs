@@ -14,5 +14,10 @@ if (process.env.SITES_BUILD !== 'true') {
     if (!asset.startsWith(output + '/') && !asset.startsWith(output + '\\')) throw new Error('Invalid asset path');
     if (!existsSync(asset)) throw new Error(`Missing exported asset: ${match[1]}`);
   }
-  console.log('GitHub Pages ready: dist/client (all referenced local assets verified).');
+  // Branch-based Pages serves tracked files from main / (root), without a build.
+  // Keep source directories intact and copy only the public export into the root.
+  for (const name of ['index.html', 'index.rsc', 'favicon.svg', '.nojekyll', '_next']) {
+    cpSync(resolve(output, name), resolve(name), { recursive: true });
+  }
+  console.log('GitHub Pages ready: repository root and dist/client (local assets verified).');
 }
